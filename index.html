@@ -51,20 +51,6 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 @media(max-width:760px){header{padding:16px 18px}.welcome{align-items:start;flex-direction:column}.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.machine-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.machine-grid{grid-template-columns:1fr}.student{font-size:11px}.brand h1{font-size:18px}}
 
-
-.fullscreen-credit{
- position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
- padding:24px;background:radial-gradient(circle at top right,#244d91 0%,#102a63 48%,#081735 100%);
- color:#fff;text-align:center;
-}
-.fullscreen-credit.show{display:flex}
-.fullscreen-credit-inner{width:min(900px,100%);animation:creditPop .45s ease-out}
-.fullscreen-credit .eyebrow{font-size:clamp(12px,2vw,18px);letter-spacing:.24em;text-transform:uppercase;color:#f4d98f;font-weight:800;margin-bottom:22px}
-.fullscreen-credit h2{font-size:clamp(36px,8vw,88px);line-height:1.05;margin:0 auto 28px;font-weight:950;letter-spacing:.015em;text-wrap:balance}
-.fullscreen-credit button{background:#f0c75e;color:#102a63;padding:15px 28px;font-size:15px;min-height:50px;border-radius:12px}
-@keyframes creditPop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.fullscreen-credit-inner{animation:none}}
-
 </style>
 </head>
 <body>
@@ -348,38 +334,7 @@ function cancel(){
  const m=data[active.location].find(x=>x.id===active.id);if(m)m.status="Available";
  active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;render();toast("Reservation cancelled.");
 }
-
-let ideaCreditShown=false;
-function showIdeaCredit(){
- if(ideaCreditShown)return;
- const input=el("studentPhone");
- const phone=normalisePhone(input.value);
- if(!/^(?:\+?60|0)1\d{8,9}$/.test(phone))return;
- ideaCreditShown=true;
- const popup=el("ideaCreditPopup");
- popup.classList.add("show");
- el("closeIdeaCredit").focus();
-}
-function closeIdeaCredit(){
- el("ideaCreditPopup").classList.remove("show");
- el("studentPhone").focus();
-}
-el("studentPhone").addEventListener("blur",showIdeaCredit);
-el("studentPhone").addEventListener("keydown",event=>{
- if(event.key==="Enter"){event.preventDefault();showIdeaCredit();}
-});
-el("closeIdeaCredit").addEventListener("click",closeIdeaCredit);
-
 el("location").addEventListener("change",render);el("type").addEventListener("change",render);render();
 </script>
-
-<div class="fullscreen-credit" id="ideaCreditPopup" role="dialog" aria-modal="true" aria-labelledby="ideaCreditTitle">
-  <div class="fullscreen-credit-inner">
-    <div class="eyebrow">Special Idea Credit</div>
-    <h2 id="ideaCreditTitle">NIK NUR HUSNA PUNYA IDEA</h2>
-    <button type="button" id="closeIdeaCredit">Continue to QLess</button>
-  </div>
-</div>
-
 </body>
 </html>
