@@ -276,11 +276,15 @@ function openPayment(id){
 function closePayment(){
  pendingMachineId=null;pendingAction=null;pendingAmount=0;
  el("paymentModal").style.display="none";
+ el("studentPhone").value="";
+ el("studentPhone").setCustomValidity("");
 }
 el("closePayment").addEventListener("click",closePayment);
 el("paymentModal").addEventListener("click",e=>{if(e.target===el("paymentModal"))closePayment();});
 el("confirmPayment").addEventListener("click",()=>{
  if(!pendingMachineId||!pendingAction)return;
+ // Require a valid Malaysian mobile number only at payment confirmation.
+ if(!validPhone())return;
  const id=pendingMachineId, loc=el("location").value;
  const m=data[loc].find(x=>x.id===id);
  const action=pendingAction, amount=pendingAmount, method=el("paymentMethod").value;
