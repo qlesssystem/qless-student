@@ -10,6 +10,9 @@
 header{background:linear-gradient(120deg,var(--navy),#1d4388);color:white;padding:22px max(20px,calc((100% - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}
 .brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:var(--gold);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:20px}.brand h1{font-size:21px;margin:0}.brand small{color:#dbe5f7}
 .student{font-size:13px;color:#f7e8bd;background:#ffffff16;padding:9px 13px;border-radius:30px}
+.header-actions{display:flex;align-items:center;gap:10px}.notification-button{background:#ffffff20;color:#fff;border:1px solid #ffffff55;min-height:40px}.notification-button span{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;padding:0 5px;border-radius:20px;background:var(--gold);color:var(--navy);font-size:11px}
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}.dashboard-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}.dashboard-card h3{margin:0 0 12px;color:var(--navy);font-size:17px}.empty-state{font-size:13px;color:var(--muted);padding:12px 0}.queue-status-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.queue-status-row:last-child{border-bottom:0}.status-pill{border-radius:20px;padding:4px 8px;font-size:11px;font-weight:800;background:#fff2df;color:#96520a}.status-pill.turn{background:#e8f6ee;color:var(--green)}.history-list{display:grid;gap:9px}.history-item{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}.history-item strong{color:var(--navy)}.history-top{display:flex;justify-content:space-between;gap:10px}.history-meta{color:var(--muted);margin-top:5px}.notification-panel{display:none;margin:0 0 20px}.notification-panel.open{display:block}.notification-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.notification-item:last-child{border-bottom:0}.notification-item small{display:block;color:var(--muted);margin-top:4px}
+@media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.header-actions{align-items:flex-end;flex-direction:column}.notification-button{min-height:36px}}
 main{max-width:1120px;margin:28px auto;padding:0 18px}.welcome{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.welcome h2{font-size:27px;margin:0 0 6px;color:var(--navy)}.welcome p{margin:0;color:var(--muted)}
 .panel{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 5px 18px #1c37600a}
 .filters{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;align-items:end}.helper{display:block;color:var(--muted);font-size:12px;margin-top:7px}.field label{display:block;font-size:12px;font-weight:800;color:#53617a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
@@ -56,7 +59,10 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 <body>
 <header>
   <div class="brand"><div class="logo">Q</div><div><h1>QLess</h1><small>Smart Laundry Queue</small></div></div>
-  <div class="student">STUDENT PORTAL · DEMO</div>
+  <div class="header-actions">
+    <button class="notification-button" id="notificationButton" type="button" aria-label="Open notifications">Notifications <span id="notificationCount">0</span></button>
+    <div class="student">STUDENT PORTAL · DEMO</div>
+  </div>
 </header>
 <main>
   <div class="welcome"><div><h2>Find your laundry machine</h2><p>Check machine availability before walking to the laundry room.</p></div></div>
@@ -94,7 +100,21 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
       <button id="cancelBooking" type="button" hidden>Cancel</button>
     </div>
   </section>
-  <p class="note">Prototype note: Students pay a RM1 queue commitment deposit before joining an In Use machine queue. This deposit is credited toward the RM5 total when their turn arrives; the remaining RM4 is then payable. After payment, the student scans the permanent QR label on that machine; the 2-minute loading countdown starts only after QR verification. This prototype simulates payments and QR confirmation; no real money is charged. Students enter their mobile phone number only during checkout. The number is used for demonstration only and is not sent to a server.</p>
+  <section class="dashboard-grid" aria-label="Personal laundry dashboard">
+    <div class="dashboard-card">
+      <h3>My Queue Status</h3>
+      <div id="myQueueStatus" aria-live="polite"><p class="empty-state">You are not currently in any queue.</p></div>
+    </div>
+    <div class="dashboard-card">
+      <h3>My Laundry History</h3>
+      <div id="laundryHistory" class="history-list"><p class="empty-state">Your transactions will appear here.</p></div>
+    </div>
+  </section>
+  <section class="panel notification-panel" id="notificationPanel">
+    <div class="section-head"><h3>Notifications</h3><button type="button" class="pay-cancel" id="clearNotifications">Clear all</button></div>
+    <div id="notificationList"><p class="empty-state">No notifications yet.</p></div>
+  </section>
+  <p class="note">Prototype note: Students pay a RM1 queue commitment deposit before joining an In Use machine queue. This deposit is credited toward the RM5 total when their turn arrives; the remaining RM4 is then payable. After payment, the student scans the permanent QR label on that machine; the 2-minute loading countdown starts only after QR verification. This prototype simulates payments, QR confirmation, queue tracking, notifications and transaction history; no real money is charged. Queue and history data are stored only in this page session and are not synchronised between devices. Students enter their mobile phone number only during checkout. The number is used for demonstration only and is not sent to a server.</p>
 </main>
 <div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
   <div class="pay-card">
@@ -141,6 +161,43 @@ const data = {
 };
 const el=id=>document.getElementById(id);
 let active=null, countdown=null, seconds=120;
+let notifications=[];
+let laundryHistory=[];
+
+function addNotification(message){
+  notifications.unshift({message,time:new Date().toLocaleString()});
+  notifications=notifications.slice(0,12);
+  renderNotifications();
+}
+function renderNotifications(){
+  el("notificationCount").textContent=notifications.length;
+  el("notificationList").innerHTML=notifications.length
+    ? notifications.map(n=>`<div class="notification-item">${n.message}<small>${n.time}</small></div>`).join("")
+    : '<p class="empty-state">No notifications yet.</p>';
+}
+function renderHistory(){
+  el("laundryHistory").innerHTML=laundryHistory.length
+    ? laundryHistory.slice(0,6).map(item=>`<div class="history-item"><div class="history-top"><strong>${item.machine}</strong><strong>RM${item.amount.toFixed(2)}</strong></div><div class="history-meta">${item.location} · ${item.method}</div><div class="history-meta">${item.status} · ${item.time}</div></div>`).join("")
+    : '<p class="empty-state">Your transactions will appear here.</p>';
+}
+function addHistory(machine,location,method,amount,status){
+  laundryHistory.unshift({machine,location,method,amount,status,time:new Date().toLocaleString()});
+  renderHistory();
+}
+function renderMyQueue(){
+  const loc=el("location").value;
+  const queued=data[loc].filter(m=>(m.queue||[]).includes("You"));
+  if(!queued.length){
+    el("myQueueStatus").innerHTML='<p class="empty-state">You are not currently in any queue.</p>';
+    return;
+  }
+  el("myQueueStatus").innerHTML=queued.map(m=>{
+    const position=m.queue.indexOf("You")+1;
+    const eta=etaFor(m,position);
+    const isTurn=position===1 && m.status==="Available";
+    return `<div class="queue-status-row"><div><strong>${m.name}</strong><br><span style="color:var(--muted)">${loc} · Position ${position} of ${m.queue.length}</span><br><span style="color:var(--muted)">Estimated wait: ${isTurn?0:eta} min</span></div><span class="status-pill ${isTurn?"turn":""}">${isTurn?"Your turn":"Waiting"}</span></div>`;
+  }).join("");
+}
 function statusClass(s){return s==="In Use"?"inuse":s==="Reserved"?"reserved":s==="Maintenance"?"maintenance":""}
 function etaFor(machine, position){
  const ahead=position-1;
@@ -184,6 +241,7 @@ function render(){
  const all=data[loc];["Available","In Use","Reserved","Maintenance"].forEach((s,i)=>el(["available","inuse","reserved","maintenance"][i]).textContent=all.filter(m=>m.status===s).length);
  document.querySelectorAll(".reserve[data-id]").forEach(b=>b.addEventListener("click",()=>openPayment(b.dataset.id)));
  document.querySelectorAll(".queue-btn").forEach(b=>b.addEventListener("click",()=>toggleQueue(b.dataset.queue)));
+ renderMyQueue();
 }
 function normalisePhone(value){return value.replace(/[\s()-]/g,"");}
 function validPhone(){
@@ -332,7 +390,18 @@ function cancel(){
  const m=data[active.location].find(x=>x.id===active.id);if(m)m.status="Available";
  active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;render();toast("Reservation cancelled.");
 }
-el("location").addEventListener("change",render);el("type").addEventListener("change",render);render();
+el("notificationButton").addEventListener("click",()=>{
+  el("notificationPanel").classList.toggle("open");
+});
+el("clearNotifications").addEventListener("click",()=>{
+  notifications=[];
+  renderNotifications();
+});
+el("location").addEventListener("change",render);
+el("type").addEventListener("change",render);
+render();
+renderNotifications();
+renderHistory();
 </script>
 </body>
 </html>
