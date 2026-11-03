@@ -19,13 +19,20 @@ select,input{width:100%;min-height:46px;border:1px solid #d6deea;border-radius:1
 .machine-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .machine{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px;align-items:center;min-width:0}
 .machine-icon{width:66px;height:66px;flex:0 0 66px;border:4px solid var(--green);border-radius:50%;display:grid;place-items:center;background:#f7fafc}
-.machine-icon svg{width:39px;height:39px}.machine-icon.inuse{border-color:var(--orange)}.machine-icon.reserved{border-color:var(--blue)}.machine-icon.maintenance{border-color:var(--red)}
-.machine-icon.inuse .drum{animation:drumSpin 1.35s linear infinite;transform-origin:24px 26px}
+.machine-icon svg{width:39px;height:39px}.machine-icon.inuse{border-color:var(--orange);animation:inUsePulse 1.8s ease-in-out infinite}.machine-icon.reserved{border-color:var(--blue)}.machine-icon.maintenance{border-color:var(--red)}
+.machine-icon.inuse .drum{display:inline;transform-box:view-box;transform-origin:24px 26px;animation:drumSpin 1.1s linear infinite;will-change:transform}
 @keyframes drumSpin{to{transform:rotate(360deg)}}
+@keyframes inUsePulse{0%,100%{box-shadow:0 0 0 0 #d9770620}50%{box-shadow:0 0 0 5px #d9770620}}
 .machine-info{min-width:0;flex:1}.machine-info h4{margin:0 0 5px;font-size:15px}.machine-info small{color:var(--muted);font-size:12px}
 .badge{display:inline-block;margin-top:8px;border-radius:30px;padding:5px 9px;font-size:11px;font-weight:800;background:#e8f6ee;color:var(--green)}
 .badge.inuse{background:#fff2df;color:var(--orange)}.badge.reserved{background:#eaf1ff;color:var(--blue)}.badge.maintenance{background:#ffeded;color:var(--red)}
 button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;font-size:12px}.reserve{background:var(--navy);color:white;margin-top:8px}.reserve:disabled{background:#d6dce7;color:#69758a;cursor:not-allowed}
+
+.queue-meta{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
+.queue-btn{background:#fff1dc;color:#96520a;border:1px solid #f2d2a5;margin-top:8px}
+.queue-btn:disabled{opacity:.55;cursor:not-allowed}
+.machine-actions{display:flex;gap:7px;flex-wrap:wrap}
+.machine-actions button{min-height:36px}
 .booking{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.booking h3{margin:0 0 6px;color:var(--navy)}.booking p{margin:0;color:var(--muted);font-size:13px}.booking strong{color:var(--navy)}
 .timer{font-size:20px;font-weight:900;color:var(--orange)}
 .note{font-size:12px;color:var(--muted);line-height:1.55;margin:14px 0 0}
@@ -41,7 +48,7 @@ button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:point
 footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 @media(max-width:760px){header{padding:16px 18px}.welcome{align-items:start;flex-direction:column}.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.machine-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.machine-grid{grid-template-columns:1fr}.student{font-size:11px}.brand h1{font-size:18px}}
-@media(prefers-reduced-motion:reduce){.machine-icon.inuse .drum{animation:none}}
+
 </style>
 </head>
 <body>
@@ -74,13 +81,13 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
       <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Available</span><span><i class="dot" style="background:var(--orange)"></i>In use</span><span><i class="dot" style="background:var(--red)"></i>Maintenance</span><span><i class="dot" style="background:var(--blue)"></i>Reserved</span></div>
     </div>
     <div class="machine-grid" id="machines" aria-live="polite"></div>
-    <p class="note">Machine status shown here is demonstration data; live status will be synchronised with the QLess sensor/chip and Admin Dashboard.</p>
+    <p class="note">Queue limit: maximum 3 students per machine in this prototype. Estimated waiting time uses the remaining cycle time, estimated cycle duration and a 5-minute turnaround buffer. These are demonstration estimates; live values must come from the machine sensor and actual cycle settings.</p>
   </section>
   <section class="panel booking" id="bookingPanel">
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
     <div><span class="timer" id="timer"></span> <button id="cancelBooking" type="button" hidden>Cancel</button></div>
   </section>
-  <p class="note">Prototype note: payment and reservation are simulated for demonstration. No real money is charged. Live payment gateway and machine synchronisation are not connected yet.</p>
+  <p class="note">Prototype note: Students do not pay when joining a queue for an In Use machine. Payment is requested only when the machine is Available and it is the student’s turn to reserve; the 2-minute loading timer starts only after successful payment. Payment, queue and machine times are simulated. No real money is charged. The 5-minute turnaround is an operational buffer for unloading/loading, not a universal technical rest requirement. Live payment and machine synchronisation are not connected yet.</p>
 </main>
 <div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
   <div class="pay-card">
@@ -102,14 +109,16 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="6" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="11" fill="none" stroke="#173b7a" stroke-width="2.5"/><g class="drum"><circle cx="24" cy="26" r="5" fill="#dce7f7"/><path d="M24 15 A11 11 0 0 1 35 26" fill="none" stroke="#e7b84b" stroke-width="2.4" stroke-linecap="round"/></g><circle cx="14" cy="11" r="1.5" fill="#e7b84b"/><path d="M20 11h13" stroke="#173b7a" stroke-width="2" stroke-linecap="round"/></svg>`;
+const MAX_QUEUE = 3;
+const TURNAROUND_MINUTES = 5; // operational buffer for unloading/loading, not mandatory machine rest
 const base = [
- {id:"W01",name:"Washer 01",type:"Washer",status:"Available"},
- {id:"W02",name:"Washer 02",type:"Washer",status:"In Use"},
- {id:"W03",name:"Washer 03",type:"Washer",status:"Available"},
- {id:"W04",name:"Washer 04",type:"Washer",status:"Reserved"},
- {id:"W05",name:"Washer 05",type:"Washer",status:"Maintenance"},
- {id:"D01",name:"Dryer 01",type:"Dryer",status:"Available"},
- {id:"D02",name:"Dryer 02",type:"Dryer",status:"In Use"}
+ {id:"W01",name:"Washer 01",type:"Washer",status:"Available",cycleMinutes:35,remainingMinutes:0,queue:[]},
+ {id:"W02",name:"Washer 02",type:"Washer",status:"In Use",cycleMinutes:35,remainingMinutes:18,queue:[]},
+ {id:"W03",name:"Washer 03",type:"Washer",status:"Available",cycleMinutes:35,remainingMinutes:0,queue:[]},
+ {id:"W04",name:"Washer 04",type:"Washer",status:"Reserved",cycleMinutes:35,remainingMinutes:0,queue:[]},
+ {id:"W05",name:"Washer 05",type:"Washer",status:"Maintenance",cycleMinutes:35,remainingMinutes:0,queue:[]},
+ {id:"D01",name:"Dryer 01",type:"Dryer",status:"Available",cycleMinutes:45,remainingMinutes:0,queue:[]},
+ {id:"D02",name:"Dryer 02",type:"Dryer",status:"In Use",cycleMinutes:45,remainingMinutes:24,queue:[]}
 ];
 const data = {
  "Ibnu Hibban Laundry":base,
@@ -120,12 +129,57 @@ const data = {
 const el=id=>document.getElementById(id);
 let active=null, countdown=null, seconds=120;
 function statusClass(s){return s==="In Use"?"inuse":s==="Reserved"?"reserved":s==="Maintenance"?"maintenance":""}
+function etaFor(machine, position){
+ const ahead=position-1;
+ return machine.remainingMinutes + TURNAROUND_MINUTES + ahead*(machine.cycleMinutes+TURNAROUND_MINUTES);
+}
 function render(){
  const loc=el("location").value, type=el("type").value;
  const rows=data[loc].filter(m=>type==="All"||m.type===type);
- el("machines").innerHTML=rows.map(m=>`<article class="machine"><div class="machine-icon ${statusClass(m.status)}">${icon}</div><div class="machine-info"><h4>${m.name}</h4><small>${m.type==="Washer"?"Washing machine":"Dryer"} · ${loc}</small><br><span class="badge ${statusClass(m.status)}">${m.status==="Maintenance"?"Under Maintenance":m.status}</span><br><button class="reserve" data-id="${m.id}" ${m.status!=="Available"||active?"disabled":""}>${m.status==="Available"?"Reserve machine":m.status==="Maintenance"?"Unavailable":"Not available"}</button></div></article>`).join("");
+ el("machines").innerHTML=rows.map(m=>{
+   const queue=m.queue||[];
+   const myPosition=queue.indexOf("You")+1;
+   const queueText=`Queue: ${queue.length}/${MAX_QUEUE}`;
+   const isInQueue=myPosition>0;
+   const isMyTurn=queue.length>0 && queue[0]==="You";
+
+   let queueInfo="";
+   if(m.status==="In Use"){
+     const position=isInQueue?myPosition:queue.length+1;
+     queueInfo=`<div class="queue-meta">Estimated wait: <strong>${etaFor(m,position)} min</strong> · ${queueText}</div>
+       <div class="queue-meta">You are only joining the queue. <strong>No payment is required while the machine is in use.</strong></div>`;
+   } else if(m.status==="Available" && queue.length){
+     queueInfo=`<div class="queue-meta">${queueText} · ${isMyTurn?"It is your turn. Reserve and pay now to start the 2-minute loading timer.": "A student is ahead in the queue. Please wait for your turn."}</div>`;
+   } else if(queue.length){
+     queueInfo=`<div class="queue-meta">${queueText} · ${queue.length} student(s) waiting</div>`;
+   }
+
+   const queueButton=m.status==="In Use"
+     ? `<button class="queue-btn" data-queue="${m.id}" ${queue.length>=MAX_QUEUE&&!isInQueue?"disabled":""}>${isInQueue?`Leave queue (position ${myPosition})`:"Join queue"}</button>`
+     : "";
+
+   let reserveButton="";
+   if(m.status==="Available"){
+     const allowed=(!queue.length || isMyTurn) && !active;
+     reserveButton=`<button class="reserve" data-id="${m.id}" ${allowed?"":"disabled"}>${queue.length&&!isMyTurn?"Waiting for your turn":"Reserve machine"}</button>`;
+   } else {
+     reserveButton=`<button class="reserve" disabled>${m.status==="Maintenance"?"Unavailable":m.status==="In Use"?"Currently in use":"Reserved"}</button>`;
+   }
+
+   return `<article class="machine"><div class="machine-icon ${statusClass(m.status)}">${icon}</div><div class="machine-info"><h4>${m.name}</h4><small>${m.type==="Washer"?"Washing machine":"Dryer"} · ${loc}</small><br><span class="badge ${statusClass(m.status)}">${m.status==="Maintenance"?"Under Maintenance":m.status}</span>${m.status==="In Use"?`<div class="queue-meta">Estimated time remaining: <strong>${m.remainingMinutes} min</strong></div>`:""}${queueInfo}<div class="machine-actions">${reserveButton}${queueButton}</div></div></article>`;
+ }).join("");
  const all=data[loc];["Available","In Use","Reserved","Maintenance"].forEach((s,i)=>el(["available","inuse","reserved","maintenance"][i]).textContent=all.filter(m=>m.status===s).length);
- document.querySelectorAll(".reserve").forEach(b=>b.addEventListener("click",()=>openPayment(b.dataset.id)));
+ document.querySelectorAll(".reserve[data-id]").forEach(b=>b.addEventListener("click",()=>openPayment(b.dataset.id)));
+ document.querySelectorAll(".queue-btn").forEach(b=>b.addEventListener("click",()=>toggleQueue(b.dataset.queue)));
+}
+function toggleQueue(id){
+ const m=data[el("location").value].find(x=>x.id===id);if(!m||m.status!=="In Use")return;
+ m.queue=m.queue||[];
+ const index=m.queue.indexOf("You");
+ if(index>=0){m.queue.splice(index,1);toast("You have left the queue.");}
+ else if(m.queue.length<MAX_QUEUE){m.queue.push("You");toast(`You joined the queue. Position: ${m.queue.length}. No payment is required while waiting.`);}
+ else{toast("This machine queue is full.");}
+ render();
 }
 function toast(msg){el("toast").textContent=msg;el("toast").style.display="block";setTimeout(()=>el("toast").style.display="none",2600)}
 let pendingMachineId=null;
@@ -134,7 +188,7 @@ function openPayment(id){
  const m=data[el("location").value].find(x=>x.id===id);
  if(!m||m.status!=="Available")return;
  pendingMachineId=id;
- el("paymentMachine").textContent=`You are booking ${m.name} at ${el("location").value}. Payment is required before the machine can be reserved.`;
+ el("paymentMachine").textContent=`You are booking ${m.name} at ${el("location").value}. This machine is available. Payment is required only now to confirm your reservation. The 2-minute loading timer starts after successful payment.`;
  el("paymentModal").style.display="flex";
 }
 function closePayment(){
