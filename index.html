@@ -87,7 +87,7 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
     <div><span class="timer" id="timer"></span> <button id="cancelBooking" type="button" hidden>Cancel</button></div>
   </section>
-  <p class="note">Prototype note: Students do not pay when joining a queue for an In Use machine. Payment is requested only when the machine is Available and it is the student’s turn to reserve; the 2-minute loading timer starts only after successful payment. Payment, queue and machine times are simulated. No real money is charged. The 5-minute turnaround is an operational buffer for unloading/loading, not a universal technical rest requirement. Live payment and machine synchronisation are not connected yet.</p>
+  <p class="note">Prototype note: Students do not pay when joining a queue for an In Use machine. Payment is requested only when the machine is Available and it is the student’s turn to reserve; the 5-minute reservation timer starts only after successful payment. Payment, queue and machine times are simulated. No real money is charged. The 5-minute turnaround is an operational buffer for unloading/loading, not a universal technical rest requirement. Live payment and machine synchronisation are not connected yet.</p>
 </main>
 <div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
   <div class="pay-card">
@@ -127,7 +127,7 @@ const data = {
  "Ibnu Sina Hostel Laundry":base.map((m,i)=>({...m,status:["Available","Reserved","In Use","Available","Available","Available","Maintenance"][i]}))
 };
 const el=id=>document.getElementById(id);
-let active=null, countdown=null, seconds=120;
+let active=null, countdown=null, seconds=300;
 function statusClass(s){return s==="In Use"?"inuse":s==="Reserved"?"reserved":s==="Maintenance"?"maintenance":""}
 function etaFor(machine, position){
  const ahead=position-1;
@@ -149,7 +149,7 @@ function render(){
      queueInfo=`<div class="queue-meta">Estimated wait: <strong>${etaFor(m,position)} min</strong> · ${queueText}</div>
        <div class="queue-meta">You are only joining the queue. <strong>No payment is required while the machine is in use.</strong></div>`;
    } else if(m.status==="Available" && queue.length){
-     queueInfo=`<div class="queue-meta">${queueText} · ${isMyTurn?"It is your turn. Reserve and pay now to start the 2-minute loading timer.": "A student is ahead in the queue. Please wait for your turn."}</div>`;
+     queueInfo=`<div class="queue-meta">${queueText} · ${isMyTurn?"It is your turn. Reserve and pay now to start the 5-minute reservation timer.": "A student is ahead in the queue. Please wait for your turn."}</div>`;
    } else if(queue.length){
      queueInfo=`<div class="queue-meta">${queueText} · ${queue.length} student(s) waiting</div>`;
    }
@@ -187,8 +187,14 @@ function openPayment(id){
  if(active || pendingMachineId)return;
  const m=data[el("location").value].find(x=>x.id===id);
  if(!m||m.status!=="Available")return;
+
+ const confirmed = window.confirm(
+   "IMPORTANT: Before you continue, please make sure you are already near the laundry area and can reach this machine immediately. After successful payment, your reservation will be held for only 5 minutes. If you do not start using the machine within 5 minutes, your reservation will be cancelled automatically and the machine will become available to other students.\n\nAre you sure you want to proceed?"
+ );
+ if(!confirmed)return;
+
  pendingMachineId=id;
- el("paymentMachine").textContent=`You are booking ${m.name} at ${el("location").value}. This machine is available. Payment is required only now to confirm your reservation. The 2-minute loading timer starts after successful payment.`;
+ el("paymentMachine").textContent=`You are booking ${m.name} at ${el("location").value}. Please ensure you are near the laundry area. After successful payment, you have 5 minutes to load your clothes and start using the machine. If the timer expires, the reservation will be cancelled automatically.`;
  el("paymentModal").style.display="flex";
 }
 function closePayment(){
@@ -208,9 +214,9 @@ el("confirmPayment").addEventListener("click",()=>{
 });
 function reserveAfterPayment(id,loc,method){
  const m=data[loc].find(x=>x.id===id);if(!m||m.status!=="Available")return;
- m.status="Reserved";active={location:loc,id,name:m.name,method};seconds=120;
- el("bookingText").textContent=`Payment successful (demo). ${active.name} at ${active.location} is reserved. Load your clothes within 2 minutes.`;
- el("cancelBooking").hidden=false;el("timer").textContent="02:00";el("cancelBooking").onclick=cancel;
+ m.status="Reserved";active={location:loc,id,name:m.name,method};seconds=300;
+ el("bookingText").textContent=`Payment successful (demo). ${active.name} at ${active.location} is reserved. Load your clothes and start the machine within 5 minutes.`;
+ el("cancelBooking").hidden=false;el("timer").textContent="05:00";el("cancelBooking").onclick=cancel;
  countdown=setInterval(()=>{
    seconds--;el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
    if(seconds<=0){clearInterval(countdown);m.status="Available";active=null;el("bookingText").textContent="Reservation expired. The machine is available to other students.";el("timer").textContent="";el("cancelBooking").hidden=true;render();toast("Reservation expired.");}
