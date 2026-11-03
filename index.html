@@ -10,23 +10,32 @@
 header{background:linear-gradient(120deg,var(--navy),#1d4388);color:white;padding:22px max(20px,calc((100% - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}
 .brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:var(--gold);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:20px}.brand h1{font-size:21px;margin:0}.brand small{color:#dbe5f7}
 .student{font-size:13px;color:#f7e8bd;background:#ffffff16;padding:9px 13px;border-radius:30px}
-.header-actions{display:flex;align-items:center;gap:10px}.notification-button{background:#ffffff20;color:#fff;border:1px solid #ffffff55;min-height:40px}.notification-button span{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;padding:0 5px;border-radius:20px;background:var(--gold);color:var(--navy);font-size:11px}
-.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}.dashboard-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}.dashboard-card h3{margin:0 0 12px;color:var(--navy);font-size:17px}.empty-state{font-size:13px;color:var(--muted);padding:12px 0}.queue-status-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.queue-status-row:last-child{border-bottom:0}.status-pill{border-radius:20px;padding:4px 8px;font-size:11px;font-weight:800;background:#fff2df;color:#96520a}.status-pill.turn{background:#e8f6ee;color:var(--green)}.history-list{display:grid;gap:9px}.history-item{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}.history-item strong{color:var(--navy)}.history-top{display:flex;justify-content:space-between;gap:10px}.history-meta{color:var(--muted);margin-top:5px}.notification-panel{display:none;margin:0 0 20px}.notification-panel.open{display:block}.notification-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.notification-item:last-child{border-bottom:0}.notification-item small{display:block;color:var(--muted);margin-top:4px}
-@media(max-width:760px){.dashboard-grid{grid-template-columns:1fr}.header-actions{align-items:flex-end;flex-direction:column}.notification-button{min-height:36px}}
 main{max-width:1120px;margin:28px auto;padding:0 18px}.welcome{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.welcome h2{font-size:27px;margin:0 0 6px;color:var(--navy)}.welcome p{margin:0;color:var(--muted)}
 .panel{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 5px 18px #1c37600a}
-.filters{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;align-items:end}.helper{display:block;color:var(--muted);font-size:12px;margin-top:7px}.field label{display:block;font-size:12px;font-weight:800;color:#53617a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.filters{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;align-items:end}.helper{display:block;color:var(--muted);font-size:12px;margin-top:7px}.profile-panel .field{max-width:440px}.profile-panel .demo-label{font-size:10px}.field label{display:block;font-size:12px;font-weight:800;color:#53617a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
 select,input{width:100%;min-height:46px;border:1px solid #d6deea;border-radius:10px;padding:0 12px;background:#fff;color:var(--ink);font-size:15px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:15px}.stat strong{display:block;font-size:25px;color:var(--navy)}.stat span{font-size:12px;color:var(--muted)}
 .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.section-head h3{margin:0;color:var(--navy);font-size:18px}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
-.machine-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.machine{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px;align-items:center;min-width:0}
-.machine-icon{width:66px;height:66px;flex:0 0 66px;border:4px solid var(--green);border-radius:50%;display:grid;place-items:center;background:#f7fafc}
+.machine-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+.machine{border:1px solid var(--line);border-radius:18px;padding:18px 17px 17px;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;background:#fff;box-shadow:0 5px 18px #1c37600a;transition:transform .18s ease,box-shadow .18s ease}
+.machine:hover{transform:translateY(-2px);box-shadow:0 10px 24px #1c376014}
+.machine-top{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left}
+.machine-icon{width:76px;height:76px;flex:0 0 76px;border:4px solid var(--green);border-radius:50%;display:grid;place-items:center;background:#f7fafc;margin:15px auto 12px}
 .machine-icon svg{width:39px;height:39px}.machine-icon.inuse{border-color:var(--orange);animation:inUsePulse 1.8s ease-in-out infinite}.machine-icon.reserved{border-color:var(--blue)}.machine-icon.maintenance{border-color:var(--red)}
 .machine-icon.inuse .drum{display:inline;transform-box:view-box;transform-origin:24px 26px;animation:drumSpin 1.1s linear infinite;will-change:transform}
 @keyframes drumSpin{to{transform:rotate(360deg)}}
 @keyframes inUsePulse{0%,100%{box-shadow:0 0 0 0 #d9770620}50%{box-shadow:0 0 0 5px #d9770620}}
-.machine-info{min-width:0;flex:1}.machine-info h4{margin:0 0 5px;font-size:15px}.machine-info small{color:var(--muted);font-size:12px}
+.machine-info{width:100%;min-width:0;flex:1}.machine-info h4{margin:0 0 5px;font-size:16px;color:var(--navy)}.machine-info small{color:var(--muted);font-size:12px;line-height:1.45;display:block}
+.machine-info .badge{margin:10px 0 0}
+.machine-metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0 13px;width:100%}
+.metric{background:#f5f7fb;border:1px solid #edf0f6;border-radius:11px;padding:10px 7px}
+.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:800;margin-bottom:4px}
+.metric strong{display:block;color:var(--navy);font-size:17px}
+.machine-actions{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:auto}
+.machine-actions button{width:100%;min-height:40px}
+.machine-actions .reserve{margin-top:0}
+.machine-actions .queue-btn{margin-top:0;background:#fff3df;color:#96520a;border:1px solid #f2d2a5}
+.machine .queue-position{font-size:11px;color:var(--muted);margin-top:8px}
 .badge{display:inline-block;margin-top:8px;border-radius:30px;padding:5px 9px;font-size:11px;font-weight:800;background:#e8f6ee;color:var(--green)}
 .badge.inuse{background:#fff2df;color:var(--orange)}.badge.reserved{background:#eaf1ff;color:var(--blue)}.badge.maintenance{background:#ffeded;color:var(--red)}
 button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;font-size:12px}.reserve{background:var(--navy);color:white;margin-top:8px}.reserve:disabled{background:#d6dce7;color:#69758a;cursor:not-allowed}
@@ -34,8 +43,6 @@ button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:point
 .queue-meta{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
 .queue-btn{background:#fff1dc;color:#96520a;border:1px solid #f2d2a5;margin-top:8px}
 .queue-btn:disabled{opacity:.55;cursor:not-allowed}
-.machine-actions{display:flex;gap:7px;flex-wrap:wrap}
-.machine-actions button{min-height:36px}
 .booking{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.booking h3{margin:0 0 6px;color:var(--navy)}.booking p{margin:0;color:var(--muted);font-size:13px}.booking strong{color:var(--navy)}
 .timer{font-size:20px;font-weight:900;color:var(--orange)}
 .booking-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
@@ -52,21 +59,27 @@ button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:point
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#142d60;color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 8px 25px #0002;display:none;z-index:5;font-size:13px}
 footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 @media(max-width:760px){header{padding:16px 18px}.welcome{align-items:start;flex-direction:column}.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.machine-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:460px){.machine-grid{grid-template-columns:1fr}.student{font-size:11px}.brand h1{font-size:18px}}
+@media(max-width:900px){.machine-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.machine-grid{grid-template-columns:1fr}.machine{padding:17px}.student{font-size:11px}.brand h1{font-size:18px}}
 
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><div class="logo">Q</div><div><h1>QLess</h1><small>Smart Laundry Queue</small></div></div>
-  <div class="header-actions">
-    <button class="notification-button" id="notificationButton" type="button" aria-label="Open notifications">Notifications <span id="notificationCount">0</span></button>
-    <div class="student">STUDENT PORTAL · DEMO</div>
-  </div>
+  <div class="student">STUDENT PORTAL · DEMO</div>
 </header>
 <main>
   <div class="welcome"><div><h2>Find your laundry machine</h2><p>Check machine availability before walking to the laundry room.</p></div></div>
 
+  <section class="panel profile-panel">
+    <div class="section-head"><h3>Student contact details</h3><span class="demo-label">REQUIRED FOR BOOKING & QUEUE</span></div>
+    <div class="field">
+      <label for="studentPhone">Mobile phone number</label>
+      <input id="studentPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0123456789" aria-describedby="phoneHelp">
+      <small id="phoneHelp" class="helper">Enter a valid Malaysian mobile number. QLess can use it for queue updates and booking notifications.</small>
+    </div>
+  </section>
   <section class="panel">
     <div class="filters">
       <div class="field"><label for="location">Choose laundry location</label>
@@ -90,32 +103,17 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
       <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Available</span><span><i class="dot" style="background:var(--orange)"></i>In use</span><span><i class="dot" style="background:var(--red)"></i>Maintenance</span><span><i class="dot" style="background:var(--blue)"></i>Reserved</span></div>
     </div>
     <div class="machine-grid" id="machines" aria-live="polite"></div>
-    <p class="note">Queue limit: maximum 3 students per machine in this prototype. A RM1 queue commitment deposit is required to join and is credited toward the RM5 total when your turn arrives. Queue cancellation policy: if you voluntarily leave or cancel the queue, the RM1 deposit is forfeited and is non-refundable. A confirmation message will appear before cancellation is processed. Estimated waiting time uses the remaining cycle time, estimated cycle duration and a 5-minute turnaround buffer. These are demonstration estimates; live values must come from the machine sensor and actual cycle settings.</p>
+    <p class="note">Queue limit: maximum 3 students per machine in this prototype. Estimated waiting time uses the remaining cycle time, estimated cycle duration and a 5-minute turnaround buffer. These are demonstration estimates; live values must come from the machine sensor and actual cycle settings.</p>
   </section>
   <section class="panel booking" id="bookingPanel">
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
     <div class="booking-actions">
       <button id="scanMachineQR" type="button" class="reserve" hidden>I've scanned the machine QR</button>
-      <button id="startMachine" type="button" class="reserve" hidden>Start Machine Now</button>
       <span class="timer" id="timer"></span>
       <button id="cancelBooking" type="button" hidden>Cancel</button>
     </div>
   </section>
-  <section class="dashboard-grid" aria-label="Personal laundry dashboard">
-    <div class="dashboard-card">
-      <h3>My Queue Status</h3>
-      <div id="myQueueStatus" aria-live="polite"><p class="empty-state">You are not currently in any queue.</p></div>
-    </div>
-    <div class="dashboard-card">
-      <h3>My Laundry History</h3>
-      <div id="laundryHistory" class="history-list"><p class="empty-state">Your transactions will appear here.</p></div>
-    </div>
-  </section>
-  <section class="panel notification-panel" id="notificationPanel">
-    <div class="section-head"><h3>Notifications</h3><button type="button" class="pay-cancel" id="clearNotifications">Clear all</button></div>
-    <div id="notificationList"><p class="empty-state">No notifications yet.</p></div>
-  </section>
-  <p class="note">Prototype note: Students pay a RM1 queue commitment deposit before joining an In Use machine queue. This deposit is credited toward the RM5 total when their turn arrives; the remaining RM4 is then payable. After payment, the student has 5 minutes to reach the reserved machine and scan its permanent QR label. If the QR is not scanned within 5 minutes, the reservation expires and the machine is released. After QR verification, a separate 5-minute loading countdown starts. This prototype simulates payments, QR confirmation, queue tracking, notifications and transaction history; no real money is charged. Queue and history data are stored only in this page session and are not synchronised between devices. Students enter their mobile phone number only during checkout. The number is used for demonstration only and is not sent to a server.</p>
+  <p class="note">Prototype note: Queue payment details are shown during checkout. After payment, the student scans the permanent QR label on that machine; the 2-minute loading countdown starts only after QR verification. This prototype simulates payments and QR confirmation; no real money is charged. Phone numbers are entered for demonstration only and are not sent to a server.</p>
 </main>
 <div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
   <div class="pay-card">
@@ -130,11 +128,6 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
     </div>
     <label for="paymentMethod" style="display:block;font-size:12px;font-weight:800;color:#53617a">PAYMENT METHOD</label>
     <select id="paymentMethod"><option value="DuitNow / Online Banking">DuitNow / Online Banking</option><option value="E-Wallet">E-Wallet</option><option value="Debit / Credit Card">Debit / Credit Card</option></select>
-    <div class="field" style="margin-top:15px">
-      <label for="studentPhone">MOBILE PHONE NUMBER</label>
-      <input id="studentPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0123456789" aria-describedby="phoneHelp">
-      <small id="phoneHelp" class="helper">Enter a valid Malaysian mobile number to proceed with payment.</small>
-    </div>
     <div class="pay-actions"><button class="pay-cancel" id="closePayment" type="button">Cancel</button><button class="pay-now" id="confirmPayment" type="button">Pay RM5.00</button></div>
     <p style="font-size:11px;margin:12px 0 0">This is a simulated payment for the prototype. It will not charge your account.</p>
   </div>
@@ -145,7 +138,6 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="6" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="11" fill="none" stroke="#173b7a" stroke-width="2.5"/><g class="drum"><circle cx="24" cy="26" r="5" fill="#dce7f7"/><path d="M24 15 A11 11 0 0 1 35 26" fill="none" stroke="#e7b84b" stroke-width="2.4" stroke-linecap="round"/></g><circle cx="14" cy="11" r="1.5" fill="#e7b84b"/><path d="M20 11h13" stroke="#173b7a" stroke-width="2" stroke-linecap="round"/></svg>`;
 const MAX_QUEUE = 3;
 const TURNAROUND_MINUTES = 5; // operational buffer for unloading/loading, not mandatory machine rest
-const ARRIVAL_WINDOW_SECONDS = 5 * 60; // time allowed to reach the reserved machine and verify its QR
 const base = [
  {id:"W01",name:"Washer 01",type:"Washer",status:"Available",cycleMinutes:35,remainingMinutes:0,queue:[]},
  {id:"W02",name:"Washer 02",type:"Washer",status:"In Use",cycleMinutes:35,remainingMinutes:18,queue:[]},
@@ -163,43 +155,6 @@ const data = {
 };
 const el=id=>document.getElementById(id);
 let active=null, countdown=null, seconds=120;
-let notifications=[];
-let laundryHistory=[];
-
-function addNotification(message){
-  notifications.unshift({message,time:new Date().toLocaleString()});
-  notifications=notifications.slice(0,12);
-  renderNotifications();
-}
-function renderNotifications(){
-  el("notificationCount").textContent=notifications.length;
-  el("notificationList").innerHTML=notifications.length
-    ? notifications.map(n=>`<div class="notification-item">${n.message}<small>${n.time}</small></div>`).join("")
-    : '<p class="empty-state">No notifications yet.</p>';
-}
-function renderHistory(){
-  el("laundryHistory").innerHTML=laundryHistory.length
-    ? laundryHistory.slice(0,6).map(item=>`<div class="history-item"><div class="history-top"><strong>${item.machine}</strong><strong>RM${item.amount.toFixed(2)}</strong></div><div class="history-meta">${item.location} · ${item.method}</div><div class="history-meta">${item.status} · ${item.time}</div></div>`).join("")
-    : '<p class="empty-state">Your transactions will appear here.</p>';
-}
-function addHistory(machine,location,method,amount,status){
-  laundryHistory.unshift({machine,location,method,amount,status,time:new Date().toLocaleString()});
-  renderHistory();
-}
-function renderMyQueue(){
-  const loc=el("location").value;
-  const queued=data[loc].filter(m=>(m.queue||[]).includes("You"));
-  if(!queued.length){
-    el("myQueueStatus").innerHTML='<p class="empty-state">You are not currently in any queue.</p>';
-    return;
-  }
-  el("myQueueStatus").innerHTML=queued.map(m=>{
-    const position=m.queue.indexOf("You")+1;
-    const eta=etaFor(m,position);
-    const isTurn=position===1 && m.status==="Available";
-    return `<div class="queue-status-row"><div><strong>${m.name}</strong><br><span style="color:var(--muted)">${loc} · Position ${position} of ${m.queue.length}</span><br><span style="color:var(--muted)">Estimated wait: ${isTurn?0:eta} min</span></div><span class="status-pill ${isTurn?"turn":""}">${isTurn?"Your turn":"Waiting"}</span></div>`;
-  }).join("");
-}
 function statusClass(s){return s==="In Use"?"inuse":s==="Reserved"?"reserved":s==="Maintenance"?"maintenance":""}
 function etaFor(machine, position){
  const ahead=position-1;
@@ -215,16 +170,13 @@ function render(){
    const isInQueue=myPosition>0;
    const isMyTurn=queue.length>0 && queue[0]==="You";
 
-   let queueInfo="";
+   let waitValue="-";
+   let queueValue=`${queue.length}/${MAX_QUEUE}`;
    if(m.status==="In Use"){
      const position=isInQueue?myPosition:queue.length+1;
-     queueInfo=`<div class="queue-meta">Estimated wait: <strong>${etaFor(m,position)} min</strong> · ${queueText}</div>
-       <div class="queue-meta">A <strong>RM1 queue deposit</strong> is required before joining. It will be credited toward your RM5 total when your turn arrives.</div>
-       <div class="queue-meta" style="color:#b42318"><strong>Cancellation policy:</strong> If you voluntarily cancel or leave the queue, the RM1 deposit is forfeited and will not be refunded.</div>`;
+     waitValue=`${etaFor(m,position)} min`;
    } else if(m.status==="Available" && queue.length){
-     queueInfo=`<div class="queue-meta">${queueText} · ${isMyTurn?"It is your turn. Reserve and pay now; the 2-minute countdown starts only after you scan the machine QR.": "A student is ahead in the queue. Please wait for your turn."}</div>`;
-   } else if(queue.length){
-     queueInfo=`<div class="queue-meta">${queueText} · ${queue.length} student(s) waiting</div>`;
+     waitValue=isMyTurn?"Your turn":"In queue";
    }
 
    const queueButton=m.status==="In Use"
@@ -239,12 +191,20 @@ function render(){
      reserveButton=`<button class="reserve" disabled>${m.status==="Maintenance"?"Unavailable":m.status==="In Use"?"Currently in use":"Reserved"}</button>`;
    }
 
-   return `<article class="machine"><div class="machine-icon ${statusClass(m.status)}">${icon}</div><div class="machine-info"><h4>${m.name}</h4><small>${m.type==="Washer"?"Washing machine":"Dryer"} · ${loc}</small><br><span class="badge ${statusClass(m.status)}">${m.status==="Maintenance"?"Under Maintenance":m.status}</span>${m.status==="In Use"?`<div class="queue-meta">Estimated time remaining: <strong>${m.remainingMinutes} min</strong></div>`:""}${queueInfo}<div class="machine-actions">${reserveButton}${queueButton}</div></div></article>`;
+   const statusLabel=m.status==="Maintenance"?"Under Maintenance":m.status;
+   const remaining=m.status==="In Use"?`${m.remainingMinutes} min`:"-";
+   return `<article class="machine">
+     <div class="machine-top"><strong style="font-size:13px;color:var(--navy)">${m.name}</strong><span class="badge ${statusClass(m.status)}">${statusLabel}</span></div>
+     <div class="machine-icon ${statusClass(m.status)}">${icon}</div>
+     <div class="machine-info"><h4>${m.type==="Washer"?"Washing machine":"Dryer"}</h4><small>${loc}</small>
+       <div class="machine-metrics"><div class="metric"><span>Time remaining</span><strong>${remaining}</strong></div><div class="metric"><span>Estimated wait · Queue</span><strong>${waitValue} · ${queueValue}</strong></div></div>
+       <div class="machine-actions">${reserveButton}${queueButton}</div>
+       ${isInQueue?`<div class="queue-position">Your queue position: ${myPosition}</div>`:""}
+     </div></article>`;
  }).join("");
  const all=data[loc];["Available","In Use","Reserved","Maintenance"].forEach((s,i)=>el(["available","inuse","reserved","maintenance"][i]).textContent=all.filter(m=>m.status===s).length);
  document.querySelectorAll(".reserve[data-id]").forEach(b=>b.addEventListener("click",()=>openPayment(b.dataset.id)));
  document.querySelectorAll(".queue-btn").forEach(b=>b.addEventListener("click",()=>toggleQueue(b.dataset.queue)));
- renderMyQueue();
 }
 function normalisePhone(value){return value.replace(/[\s()-]/g,"");}
 function validPhone(){
@@ -260,18 +220,15 @@ function toggleQueue(id){
  m.queue=m.queue||[];
  const index=m.queue.indexOf("You");
  if(index>=0){
-   const confirmed = window.confirm(
-     `Cancel your queue for ${m.name}?\n\nIMPORTANT: Your RM1 queue deposit will be forfeited and will NOT be refunded if you confirm cancellation.\n\nDo you want to leave this queue?`
-   );
-   if(!confirmed)return;
+   if(!window.confirm("Are you sure you want to leave the queue?"))return;
    m.queue.splice(index,1);
    m.queueDepositPaidByYou=false;
-   toast("Queue cancelled. Your RM1 deposit has been forfeited.");
-   addNotification(`You cancelled your queue for ${m.name}. Your RM1 deposit was forfeited under the displayed queue policy.`);
+   toast("You have left the queue.");
    render();
    return;
  }
  if(m.queue.length>=MAX_QUEUE){toast("This machine queue is full.");return;}
+ if(!validPhone())return;
  openQueuePayment(id);
 }
 function toast(msg){el("toast").textContent=msg;el("toast").style.display="block";setTimeout(()=>el("toast").style.display="none",3200)}
@@ -298,6 +255,7 @@ function openQueuePayment(id){
 }
 function openPayment(id){
  if(active || pendingMachineId)return;
+ if(!validPhone())return;
  const loc=el("location").value;
  const m=data[loc].find(x=>x.id===id);
  if(!m||m.status!=="Available")return;
@@ -307,27 +265,24 @@ function openPayment(id){
  const hasDeposit=!!m.queueDepositPaidByYou;
  const amount=hasDeposit?4:5;
  const confirmed = window.confirm(
-   "IMPORTANT: Please make sure you are already at or very near the laundry area. Your 5-minute loading countdown will start only after payment and successful QR verification at the selected machine. Continue?"
+   "IMPORTANT: Please make sure you are already at or very near the laundry area. Your 2-minute loading countdown will start only after payment and successful QR verification at the selected machine. Continue?"
  );
  if(!confirmed)return;
  pendingMachineId=id;pendingAction="reserve";pendingAmount=amount;
  const description=hasDeposit
-   ? `Your RM1 queue deposit has already been paid and will be credited. Pay the remaining RM4 for ${m.name} at ${loc}. After payment, scan this machine's permanent QR label. The 5-minute loading countdown starts only after QR verification.`
-   : `You are booking ${m.name} at ${loc}. Pay RM5 to reserve it. Then scan this machine's permanent QR label. The 5-minute loading countdown starts only after QR verification.`;
+   ? `Your RM1 queue deposit has already been paid and will be credited. Pay the remaining RM4 for ${m.name} at ${loc}. After payment, scan this machine's permanent QR label. The 2-minute loading countdown starts only after QR verification.`
+   : `You are booking ${m.name} at ${loc}. Pay RM5 to reserve it. Then scan this machine's permanent QR label. The 2-minute loading countdown starts only after QR verification.`;
  setCheckout("Confirm your reservation",description,amount,hasDeposit?"reserve-balance":"reserve");
  el("paymentModal").style.display="flex";
 }
 function closePayment(){
  pendingMachineId=null;pendingAction=null;pendingAmount=0;
  el("paymentModal").style.display="none";
- el("studentPhone").value="";
- el("studentPhone").setCustomValidity("");
 }
 el("closePayment").addEventListener("click",closePayment);
 el("paymentModal").addEventListener("click",e=>{if(e.target===el("paymentModal"))closePayment();});
 el("confirmPayment").addEventListener("click",()=>{
  if(!pendingMachineId||!pendingAction)return;
- if(!validPhone())return;
  const id=pendingMachineId, loc=el("location").value;
  const m=data[loc].find(x=>x.id===id);
  const action=pendingAction, amount=pendingAmount, method=el("paymentMethod").value;
@@ -353,105 +308,52 @@ function reserveAfterPayment(id,loc,method,amount){
  m.queueDepositPaidByYou=false;
  m.status="Reserved";
  active={location:loc,id,name:m.name,method,amountPaid:amount,qrVerified:false};
- seconds=ARRIVAL_WINDOW_SECONDS;
- el("bookingText").textContent=`Payment successful (demo). RM${amount.toFixed(2)} paid. ${active.name} at ${active.location} is reserved for you. You have 5 minutes to reach this exact machine and scan its permanent QLess QR label. If you do not scan it before the timer expires, the reservation will be cancelled and the machine released.`;
- el("timer").textContent="05:00";
+ seconds=120;
+ el("bookingText").textContent=`Payment successful (demo). RM${amount.toFixed(2)} paid. ${active.name} at ${active.location} is reserved for you. Go to this exact machine and scan its permanent QLess QR label. The 2-minute loading countdown has not started yet.`;
+ el("timer").textContent="";
  el("scanMachineQR").hidden=false;
- el("startMachine").hidden=true;
  el("scanMachineQR").disabled=false;
  el("scanMachineQR").textContent="I've scanned the machine QR";
  el("scanMachineQR").onclick=verifyMachineQR;
  el("cancelBooking").hidden=false;
  el("cancelBooking").onclick=cancel;
- render();
- addNotification(`Your reservation for ${m.name} is confirmed. You have 5 minutes to arrive and scan its QR label.`);
- toast(`Reservation confirmed. Scan the QR label on ${m.name} within 5 minutes.`);
- startReservationCountdown("arrival");
-}
-function startReservationCountdown(stage){
- clearInterval(countdown);
- countdown=setInterval(()=>{
-   seconds--;
-   el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
-   if(seconds<=0){
-     clearInterval(countdown);
-     const expired=active;
-     if(!expired)return;
-     const machine=data[expired.location].find(x=>x.id===expired.id);
-     if(machine)machine.status="Available";
-     active=null;
-     el("bookingText").textContent=stage==="arrival"
-       ?"Reservation expired because the machine QR was not scanned within 5 minutes. The machine is now available to other students."
-       :"Loading time expired. The machine is now available to other students.";
-     el("timer").textContent="";
-     el("cancelBooking").hidden=true;
-     el("scanMachineQR").hidden=true;
-     el("startMachine").hidden=true;
-     render();
-     addNotification(stage==="arrival"
-       ?`Your reservation for ${expired.name} expired because you did not scan the QR within 5 minutes.`
-       :`Your 5-minute loading window for ${expired.name} expired.`);
-     toast(stage==="arrival"
-       ?"Reservation expired. The machine has been released."
-       :"Loading time expired. The machine is now available.");
-   }
- },1000);
+ render();toast(`Demo payment successful via ${method}. Scan the QR label on ${m.name} to start the 2-minute countdown.`);
 }
 function verifyMachineQR(){
  if(!active || active.qrVerified)return;
  const m=data[active.location].find(x=>x.id===active.id);
  if(!m || m.status!=="Reserved"){toast("Reservation could not be verified.");return;}
 
- // Prototype simulation: this button represents a successful scan of this machine's fixed QR label.
+ // Prototype simulation: the button represents a successful scan of this machine's fixed QR label.
  // A production app must read the QR payload and verify its machine ID and booking on the server.
- clearInterval(countdown);
  active.qrVerified=true;
  el("scanMachineQR").hidden=true;
- el("startMachine").hidden=false;
- el("bookingText").textContent=`QR verified for ${active.name}. You now have 2 minutes to load your clothes and start the machine.`;
- seconds=300;
- el("timer").textContent="05:00";
- el("startMachine").hidden=false;
- startReservationCountdown("loading");
- addNotification(`QR verification completed for ${active.name}. Your 5-minute loading countdown has started. You can start the machine at any time before it expires.`);
- toast("Machine QR verified. Your 5-minute loading countdown has started. You can start the machine at any time before it expires.");
+ el("bookingText").textContent=`QR verified for ${active.name}. You have 2 minutes to load your clothes and start the machine.`;
+ seconds=120;
+ el("timer").textContent="02:00";
+ countdown=setInterval(()=>{
+   seconds--;
+   el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+   if(seconds<=0){
+     clearInterval(countdown);
+     m.status="Available";
+     active=null;
+     el("bookingText").textContent="Reservation expired. The machine is available to other students.";
+     el("timer").textContent="";
+     el("cancelBooking").hidden=true;
+     el("scanMachineQR").hidden=true;
+     render();
+     toast("Reservation expired. The machine is now available.");
+   }
+ },1000);
+ toast("Machine QR verified. Your 2-minute countdown has started.");
 }
-function startMachineNow(){
- if(!active || !active.qrVerified)return;
- const booking=active;
- const m=data[booking.location].find(x=>x.id===booking.id);
- if(!m || m.status!=="Reserved"){toast("The reservation could not be started.");return;}
- clearInterval(countdown);
- m.status="In Use";
- m.remainingMinutes=m.cycleMinutes;
- active=null;
- el("bookingText").textContent=`${booking.name} has been started successfully. Enjoy your laundry cycle.`;
- el("timer").textContent="";
- el("scanMachineQR").hidden=true;
- el("startMachine").hidden=true;
- el("cancelBooking").hidden=true;
- addNotification(`${booking.name} has been started. The loading timer was stopped early.`);
- render();
- toast(`${booking.name} started successfully.`);
-}
-el("startMachine").addEventListener("click",startMachineNow);
 function cancel(){
  if(!active)return;clearInterval(countdown);
  const m=data[active.location].find(x=>x.id===active.id);if(m)m.status="Available";
- active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;el("startMachine").hidden=true;render();toast("Reservation cancelled.");
+ active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;render();toast("Reservation cancelled.");
 }
-el("notificationButton").addEventListener("click",()=>{
-  el("notificationPanel").classList.toggle("open");
-});
-el("clearNotifications").addEventListener("click",()=>{
-  notifications=[];
-  renderNotifications();
-});
-el("location").addEventListener("change",render);
-el("type").addEventListener("change",render);
-render();
-renderNotifications();
-renderHistory();
+el("location").addEventListener("change",render);el("type").addEventListener("change",render);render();
 </script>
 </body>
 </html>
