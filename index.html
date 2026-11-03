@@ -90,7 +90,7 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
       <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Available</span><span><i class="dot" style="background:var(--orange)"></i>In use</span><span><i class="dot" style="background:var(--red)"></i>Maintenance</span><span><i class="dot" style="background:var(--blue)"></i>Reserved</span></div>
     </div>
     <div class="machine-grid" id="machines" aria-live="polite"></div>
-    <p class="note">Queue limit: maximum 3 students per machine in this prototype. A RM1 queue commitment deposit is required to join; it is credited toward the RM5 total when your turn arrives. Estimated waiting time uses the remaining cycle time, estimated cycle duration and a 5-minute turnaround buffer. These are demonstration estimates; live values must come from the machine sensor and actual cycle settings.</p>
+    <p class="note">Queue limit: maximum 3 students per machine in this prototype. A RM1 queue commitment deposit is required to join and is credited toward the RM5 total when your turn arrives. Queue cancellation policy: if you voluntarily leave or cancel the queue, the RM1 deposit is forfeited and is non-refundable. A confirmation message will appear before cancellation is processed. Estimated waiting time uses the remaining cycle time, estimated cycle duration and a 5-minute turnaround buffer. These are demonstration estimates; live values must come from the machine sensor and actual cycle settings.</p>
   </section>
   <section class="panel booking" id="bookingPanel">
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
@@ -219,7 +219,8 @@ function render(){
    if(m.status==="In Use"){
      const position=isInQueue?myPosition:queue.length+1;
      queueInfo=`<div class="queue-meta">Estimated wait: <strong>${etaFor(m,position)} min</strong> · ${queueText}</div>
-       <div class="queue-meta">A <strong>RM1 queue deposit</strong> is required before joining. It will be credited toward your RM5 total when your turn arrives.</div>`;
+       <div class="queue-meta">A <strong>RM1 queue deposit</strong> is required before joining. It will be credited toward your RM5 total when your turn arrives.</div>
+       <div class="queue-meta" style="color:#b42318"><strong>Cancellation policy:</strong> If you voluntarily cancel or leave the queue, the RM1 deposit is forfeited and will not be refunded.</div>`;
    } else if(m.status==="Available" && queue.length){
      queueInfo=`<div class="queue-meta">${queueText} · ${isMyTurn?"It is your turn. Reserve and pay now; the 2-minute countdown starts only after you scan the machine QR.": "A student is ahead in the queue. Please wait for your turn."}</div>`;
    } else if(queue.length){
@@ -259,9 +260,14 @@ function toggleQueue(id){
  m.queue=m.queue||[];
  const index=m.queue.indexOf("You");
  if(index>=0){
+   const confirmed = window.confirm(
+     `Cancel your queue for ${m.name}?\n\nIMPORTANT: Your RM1 queue deposit will be forfeited and will NOT be refunded if you confirm cancellation.\n\nDo you want to leave this queue?`
+   );
+   if(!confirmed)return;
    m.queue.splice(index,1);
    m.queueDepositPaidByYou=false;
-   toast("You left the queue. The RM1 queue deposit is forfeited under the demo queue policy.");
+   toast("Queue cancelled. Your RM1 deposit has been forfeited.");
+   addNotification(`You cancelled your queue for ${m.name}. Your RM1 deposit was forfeited under the displayed queue policy.`);
    render();
    return;
  }
