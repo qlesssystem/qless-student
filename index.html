@@ -96,6 +96,7 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
     <div class="booking-actions">
       <button id="scanMachineQR" type="button" class="reserve" hidden>I've scanned the machine QR</button>
+      <button id="startMachine" type="button" class="reserve" hidden>Start Machine Now</button>
       <span class="timer" id="timer"></span>
       <button id="cancelBooking" type="button" hidden>Cancel</button>
     </div>
@@ -114,7 +115,7 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
     <div class="section-head"><h3>Notifications</h3><button type="button" class="pay-cancel" id="clearNotifications">Clear all</button></div>
     <div id="notificationList"><p class="empty-state">No notifications yet.</p></div>
   </section>
-  <p class="note">Prototype note: Students pay a RM1 queue commitment deposit before joining an In Use machine queue. This deposit is credited toward the RM5 total when their turn arrives; the remaining RM4 is then payable. After payment, the student scans the permanent QR label on that machine; the 2-minute loading countdown starts only after QR verification. This prototype simulates payments, QR confirmation, queue tracking, notifications and transaction history; no real money is charged. Queue and history data are stored only in this page session and are not synchronised between devices. Students enter their mobile phone number only during checkout. The number is used for demonstration only and is not sent to a server.</p>
+  <p class="note">Prototype note: Students pay a RM1 queue commitment deposit before joining an In Use machine queue. This deposit is credited toward the RM5 total when their turn arrives; the remaining RM4 is then payable. After payment, the student has 5 minutes to reach the reserved machine and scan its permanent QR label. If the QR is not scanned within 5 minutes, the reservation expires and the machine is released. After QR verification, a separate 5-minute loading countdown starts. This prototype simulates payments, QR confirmation, queue tracking, notifications and transaction history; no real money is charged. Queue and history data are stored only in this page session and are not synchronised between devices. Students enter their mobile phone number only during checkout. The number is used for demonstration only and is not sent to a server.</p>
 </main>
 <div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
   <div class="pay-card">
@@ -144,6 +145,7 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="6" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="11" fill="none" stroke="#173b7a" stroke-width="2.5"/><g class="drum"><circle cx="24" cy="26" r="5" fill="#dce7f7"/><path d="M24 15 A11 11 0 0 1 35 26" fill="none" stroke="#e7b84b" stroke-width="2.4" stroke-linecap="round"/></g><circle cx="14" cy="11" r="1.5" fill="#e7b84b"/><path d="M20 11h13" stroke="#173b7a" stroke-width="2" stroke-linecap="round"/></svg>`;
 const MAX_QUEUE = 3;
 const TURNAROUND_MINUTES = 5; // operational buffer for unloading/loading, not mandatory machine rest
+const ARRIVAL_WINDOW_SECONDS = 5 * 60; // time allowed to reach the reserved machine and verify its QR
 const base = [
  {id:"W01",name:"Washer 01",type:"Washer",status:"Available",cycleMinutes:35,remainingMinutes:0,queue:[]},
  {id:"W02",name:"Washer 02",type:"Washer",status:"In Use",cycleMinutes:35,remainingMinutes:18,queue:[]},
@@ -299,13 +301,13 @@ function openPayment(id){
  const hasDeposit=!!m.queueDepositPaidByYou;
  const amount=hasDeposit?4:5;
  const confirmed = window.confirm(
-   "IMPORTANT: Please make sure you are already at or very near the laundry area. Your 2-minute loading countdown will start only after payment and successful QR verification at the selected machine. Continue?"
+   "IMPORTANT: Please make sure you are already at or very near the laundry area. Your 5-minute loading countdown will start only after payment and successful QR verification at the selected machine. Continue?"
  );
  if(!confirmed)return;
  pendingMachineId=id;pendingAction="reserve";pendingAmount=amount;
  const description=hasDeposit
-   ? `Your RM1 queue deposit has already been paid and will be credited. Pay the remaining RM4 for ${m.name} at ${loc}. After payment, scan this machine's permanent QR label. The 2-minute loading countdown starts only after QR verification.`
-   : `You are booking ${m.name} at ${loc}. Pay RM5 to reserve it. Then scan this machine's permanent QR label. The 2-minute loading countdown starts only after QR verification.`;
+   ? `Your RM1 queue deposit has already been paid and will be credited. Pay the remaining RM4 for ${m.name} at ${loc}. After payment, scan this machine's permanent QR label. The 5-minute loading countdown starts only after QR verification.`
+   : `You are booking ${m.name} at ${loc}. Pay RM5 to reserve it. Then scan this machine's permanent QR label. The 5-minute loading countdown starts only after QR verification.`;
  setCheckout("Confirm your reservation",description,amount,hasDeposit?"reserve-balance":"reserve");
  el("paymentModal").style.display="flex";
 }
@@ -345,50 +347,92 @@ function reserveAfterPayment(id,loc,method,amount){
  m.queueDepositPaidByYou=false;
  m.status="Reserved";
  active={location:loc,id,name:m.name,method,amountPaid:amount,qrVerified:false};
- seconds=120;
- el("bookingText").textContent=`Payment successful (demo). RM${amount.toFixed(2)} paid. ${active.name} at ${active.location} is reserved for you. Go to this exact machine and scan its permanent QLess QR label. The 2-minute loading countdown has not started yet.`;
- el("timer").textContent="";
+ seconds=ARRIVAL_WINDOW_SECONDS;
+ el("bookingText").textContent=`Payment successful (demo). RM${amount.toFixed(2)} paid. ${active.name} at ${active.location} is reserved for you. You have 5 minutes to reach this exact machine and scan its permanent QLess QR label. If you do not scan it before the timer expires, the reservation will be cancelled and the machine released.`;
+ el("timer").textContent="05:00";
  el("scanMachineQR").hidden=false;
+ el("startMachine").hidden=true;
  el("scanMachineQR").disabled=false;
  el("scanMachineQR").textContent="I've scanned the machine QR";
  el("scanMachineQR").onclick=verifyMachineQR;
  el("cancelBooking").hidden=false;
  el("cancelBooking").onclick=cancel;
- render();toast(`Demo payment successful via ${method}. Scan the QR label on ${m.name} to start the 2-minute countdown.`);
+ render();
+ addNotification(`Your reservation for ${m.name} is confirmed. You have 5 minutes to arrive and scan its QR label.`);
+ toast(`Reservation confirmed. Scan the QR label on ${m.name} within 5 minutes.`);
+ startReservationCountdown("arrival");
+}
+function startReservationCountdown(stage){
+ clearInterval(countdown);
+ countdown=setInterval(()=>{
+   seconds--;
+   el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
+   if(seconds<=0){
+     clearInterval(countdown);
+     const expired=active;
+     if(!expired)return;
+     const machine=data[expired.location].find(x=>x.id===expired.id);
+     if(machine)machine.status="Available";
+     active=null;
+     el("bookingText").textContent=stage==="arrival"
+       ?"Reservation expired because the machine QR was not scanned within 5 minutes. The machine is now available to other students."
+       :"Loading time expired. The machine is now available to other students.";
+     el("timer").textContent="";
+     el("cancelBooking").hidden=true;
+     el("scanMachineQR").hidden=true;
+     el("startMachine").hidden=true;
+     render();
+     addNotification(stage==="arrival"
+       ?`Your reservation for ${expired.name} expired because you did not scan the QR within 5 minutes.`
+       :`Your 5-minute loading window for ${expired.name} expired.`);
+     toast(stage==="arrival"
+       ?"Reservation expired. The machine has been released."
+       :"Loading time expired. The machine is now available.");
+   }
+ },1000);
 }
 function verifyMachineQR(){
  if(!active || active.qrVerified)return;
  const m=data[active.location].find(x=>x.id===active.id);
  if(!m || m.status!=="Reserved"){toast("Reservation could not be verified.");return;}
 
- // Prototype simulation: the button represents a successful scan of this machine's fixed QR label.
+ // Prototype simulation: this button represents a successful scan of this machine's fixed QR label.
  // A production app must read the QR payload and verify its machine ID and booking on the server.
+ clearInterval(countdown);
  active.qrVerified=true;
  el("scanMachineQR").hidden=true;
- el("bookingText").textContent=`QR verified for ${active.name}. You have 2 minutes to load your clothes and start the machine.`;
- seconds=120;
- el("timer").textContent="02:00";
- countdown=setInterval(()=>{
-   seconds--;
-   el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
-   if(seconds<=0){
-     clearInterval(countdown);
-     m.status="Available";
-     active=null;
-     el("bookingText").textContent="Reservation expired. The machine is available to other students.";
-     el("timer").textContent="";
-     el("cancelBooking").hidden=true;
-     el("scanMachineQR").hidden=true;
-     render();
-     toast("Reservation expired. The machine is now available.");
-   }
- },1000);
- toast("Machine QR verified. Your 2-minute countdown has started.");
+ el("startMachine").hidden=false;
+ el("bookingText").textContent=`QR verified for ${active.name}. You now have 2 minutes to load your clothes and start the machine.`;
+ seconds=300;
+ el("timer").textContent="05:00";
+ el("startMachine").hidden=false;
+ startReservationCountdown("loading");
+ addNotification(`QR verification completed for ${active.name}. Your 5-minute loading countdown has started. You can start the machine at any time before it expires.`);
+ toast("Machine QR verified. Your 5-minute loading countdown has started. You can start the machine at any time before it expires.");
 }
+function startMachineNow(){
+ if(!active || !active.qrVerified)return;
+ const booking=active;
+ const m=data[booking.location].find(x=>x.id===booking.id);
+ if(!m || m.status!=="Reserved"){toast("The reservation could not be started.");return;}
+ clearInterval(countdown);
+ m.status="In Use";
+ m.remainingMinutes=m.cycleMinutes;
+ active=null;
+ el("bookingText").textContent=`${booking.name} has been started successfully. Enjoy your laundry cycle.`;
+ el("timer").textContent="";
+ el("scanMachineQR").hidden=true;
+ el("startMachine").hidden=true;
+ el("cancelBooking").hidden=true;
+ addNotification(`${booking.name} has been started. The loading timer was stopped early.`);
+ render();
+ toast(`${booking.name} started successfully.`);
+}
+el("startMachine").addEventListener("click",startMachineNow);
 function cancel(){
  if(!active)return;clearInterval(countdown);
  const m=data[active.location].find(x=>x.id===active.id);if(m)m.status="Available";
- active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;render();toast("Reservation cancelled.");
+ active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;el("startMachine").hidden=true;render();toast("Reservation cancelled.");
 }
 el("notificationButton").addEventListener("click",()=>{
   el("notificationPanel").classList.toggle("open");
