@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QLess | Student Laundry</title>
+<title>QLess | Student Dashboard</title>
 <style>
 :root{--navy:#102a63;--navy2:#173b7a;--gold:#e7b84b;--ink:#17233d;--muted:#68758d;--line:#e4e9f1;--bg:#f4f7fc;--green:#17834b;--orange:#d97706;--red:#cf3f45;--blue:#2864c5}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--ink)}
@@ -20,8 +20,8 @@ select,input{width:100%;min-height:46px;border:1px solid #d6deea;border-radius:1
 .machine{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:13px;align-items:center;min-width:0}
 .machine-icon{width:66px;height:66px;flex:0 0 66px;border:4px solid var(--green);border-radius:50%;display:grid;place-items:center;background:#f7fafc}
 .machine-icon svg{width:39px;height:39px}.machine-icon.inuse{border-color:var(--orange)}.machine-icon.reserved{border-color:var(--blue)}.machine-icon.maintenance{border-color:var(--red)}
-.machine-icon.inuse svg{animation:spin 2.8s linear infinite;transform-origin:center}
-@keyframes spin{to{transform:rotate(360deg)}}
+.machine-icon.inuse .drum{animation:drumSpin 1.35s linear infinite;transform-origin:24px 26px}
+@keyframes drumSpin{to{transform:rotate(360deg)}}
 .machine-info{min-width:0;flex:1}.machine-info h4{margin:0 0 5px;font-size:15px}.machine-info small{color:var(--muted);font-size:12px}
 .badge{display:inline-block;margin-top:8px;border-radius:30px;padding:5px 9px;font-size:11px;font-weight:800;background:#e8f6ee;color:var(--green)}
 .badge.inuse{background:#fff2df;color:var(--orange)}.badge.reserved{background:#eaf1ff;color:var(--blue)}.badge.maintenance{background:#ffeded;color:var(--red)}
@@ -29,11 +29,19 @@ button{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:point
 .booking{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.booking h3{margin:0 0 6px;color:var(--navy)}.booking p{margin:0;color:var(--muted);font-size:13px}.booking strong{color:var(--navy)}
 .timer{font-size:20px;font-weight:900;color:var(--orange)}
 .note{font-size:12px;color:var(--muted);line-height:1.55;margin:14px 0 0}
+
+.pay-modal{position:fixed;inset:0;background:#0b183dcc;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+.pay-card{width:min(100%,430px);background:#fff;border-radius:18px;padding:23px;box-shadow:0 20px 60px #0004}
+.pay-card h3{margin:0 0 7px;color:var(--navy);font-size:21px}.pay-card p{margin:0 0 17px;color:var(--muted);font-size:13px;line-height:1.5}
+.bill{background:#f4f7fc;border:1px solid var(--line);border-radius:12px;padding:13px;margin:14px 0}
+.bill-row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:13px}.bill-row.total{border-top:1px solid #dbe2ee;margin-top:5px;padding-top:10px;font-weight:900;color:var(--navy);font-size:16px}
+.pay-actions{display:flex;gap:9px;margin-top:16px}.pay-actions button{flex:1;min-height:44px}.pay-now{background:var(--navy);color:#fff}.pay-cancel{background:#edf1f7;color:#34415b}
+.pay-card select{margin-top:7px}.demo-label{display:inline-block;background:#fff3d8;color:#805900;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:900;margin-bottom:10px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#142d60;color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 8px 25px #0002;display:none;z-index:5;font-size:13px}
 footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 @media(max-width:760px){header{padding:16px 18px}.welcome{align-items:start;flex-direction:column}.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.machine-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:460px){.machine-grid{grid-template-columns:1fr}.student{font-size:11px}.brand h1{font-size:18px}}
-@media(prefers-reduced-motion:reduce){.machine-icon.inuse svg{animation:none}}
+@media(prefers-reduced-motion:reduce){.machine-icon.inuse .drum{animation:none}}
 </style>
 </head>
 <body>
@@ -66,18 +74,34 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
       <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Available</span><span><i class="dot" style="background:var(--orange)"></i>In use</span><span><i class="dot" style="background:var(--red)"></i>Maintenance</span><span><i class="dot" style="background:var(--blue)"></i>Reserved</span></div>
     </div>
     <div class="machine-grid" id="machines" aria-live="polite"></div>
-    <p class="note">Machine status shown here is demonstration data. A live version will receive real-time status from the QLess sensor/chip and the Admin Dashboard.</p>
+    <p class="note">Machine status shown here is demonstration data; live status will be synchronised with the QLess sensor/chip and Admin Dashboard.</p>
   </section>
   <section class="panel booking" id="bookingPanel">
     <div><h3>Your reservation</h3><p id="bookingText">You have no active reservation.</p></div>
     <div><span class="timer" id="timer"></span> <button id="cancelBooking" type="button" hidden>Cancel</button></div>
   </section>
-  <p class="note">Prototype note: reservation is simulated in this browser. Payment gateway, student login and live machine synchronisation are not connected yet.</p>
+  <p class="note">Prototype note: payment and reservation are simulated for demonstration. No real money is charged. Live payment gateway and machine synchronisation are not connected yet.</p>
 </main>
+<div class="pay-modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+  <div class="pay-card">
+    <span class="demo-label">DEMO CHECKOUT</span>
+    <h3 id="paymentTitle">Confirm your payment</h3>
+    <p id="paymentMachine">Review your booking before proceeding.</p>
+    <div class="bill">
+      <div class="bill-row"><span>Wash price (demo)</span><strong>RM4.00</strong></div>
+      <div class="bill-row"><span>QLess service fee</span><strong>RM1.00</strong></div>
+      <div class="bill-row total"><span>Total to pay</span><strong>RM5.00</strong></div>
+    </div>
+    <label for="paymentMethod" style="display:block;font-size:12px;font-weight:800;color:#53617a">PAYMENT METHOD</label>
+    <select id="paymentMethod"><option value="DuitNow / Online Banking">DuitNow / Online Banking</option><option value="E-Wallet">E-Wallet</option><option value="Debit / Credit Card">Debit / Credit Card</option></select>
+    <div class="pay-actions"><button class="pay-cancel" id="closePayment" type="button">Cancel</button><button class="pay-now" id="confirmPayment" type="button">Pay RM5.00</button></div>
+    <p style="font-size:11px;margin:12px 0 0">This is a simulated payment for the prototype. It will not charge your account.</p>
+  </div>
+</div>
 <footer>© 2026 QLess Smart Laundry Queue Management System</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
-const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="6" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="11" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="5" fill="#dce7f7"/><circle cx="14" cy="11" r="1.5" fill="#e7b84b"/><path d="M20 11h13" stroke="#173b7a" stroke-width="2" stroke-linecap="round"/></svg>`;
+const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="4" width="34" height="40" rx="6" fill="none" stroke="#173b7a" stroke-width="2.5"/><circle cx="24" cy="26" r="11" fill="none" stroke="#173b7a" stroke-width="2.5"/><g class="drum"><circle cx="24" cy="26" r="5" fill="#dce7f7"/><path d="M24 15 A11 11 0 0 1 35 26" fill="none" stroke="#e7b84b" stroke-width="2.4" stroke-linecap="round"/></g><circle cx="14" cy="11" r="1.5" fill="#e7b84b"/><path d="M20 11h13" stroke="#173b7a" stroke-width="2" stroke-linecap="round"/></svg>`;
 const base = [
  {id:"W01",name:"Washer 01",type:"Washer",status:"Available"},
  {id:"W02",name:"Washer 02",type:"Washer",status:"In Use"},
@@ -101,20 +125,43 @@ function render(){
  const rows=data[loc].filter(m=>type==="All"||m.type===type);
  el("machines").innerHTML=rows.map(m=>`<article class="machine"><div class="machine-icon ${statusClass(m.status)}">${icon}</div><div class="machine-info"><h4>${m.name}</h4><small>${m.type==="Washer"?"Washing machine":"Dryer"} · ${loc}</small><br><span class="badge ${statusClass(m.status)}">${m.status==="Maintenance"?"Under Maintenance":m.status}</span><br><button class="reserve" data-id="${m.id}" ${m.status!=="Available"||active?"disabled":""}>${m.status==="Available"?"Reserve machine":m.status==="Maintenance"?"Unavailable":"Not available"}</button></div></article>`).join("");
  const all=data[loc];["Available","In Use","Reserved","Maintenance"].forEach((s,i)=>el(["available","inuse","reserved","maintenance"][i]).textContent=all.filter(m=>m.status===s).length);
- document.querySelectorAll(".reserve").forEach(b=>b.addEventListener("click",()=>reserve(b.dataset.id)));
+ document.querySelectorAll(".reserve").forEach(b=>b.addEventListener("click",()=>openPayment(b.dataset.id)));
 }
 function toast(msg){el("toast").textContent=msg;el("toast").style.display="block";setTimeout(()=>el("toast").style.display="none",2600)}
-function reserve(id){
- if(active)return;
- const m=data[el("location").value].find(x=>x.id===id);if(!m||m.status!=="Available")return;
- m.status="Reserved";active={location:el("location").value,id,name:m.name};seconds=120;
- el("bookingText").textContent=`${active.name} at ${active.location} is reserved. Please load your clothes within 2 minutes.`;
+let pendingMachineId=null;
+function openPayment(id){
+ if(active || pendingMachineId)return;
+ const m=data[el("location").value].find(x=>x.id===id);
+ if(!m||m.status!=="Available")return;
+ pendingMachineId=id;
+ el("paymentMachine").textContent=`You are booking ${m.name} at ${el("location").value}. Payment is required before the machine can be reserved.`;
+ el("paymentModal").style.display="flex";
+}
+function closePayment(){
+ pendingMachineId=null;
+ el("paymentModal").style.display="none";
+}
+el("closePayment").addEventListener("click",closePayment);
+el("paymentModal").addEventListener("click",e=>{if(e.target===el("paymentModal"))closePayment();});
+el("confirmPayment").addEventListener("click",()=>{
+ if(!pendingMachineId)return;
+ const id=pendingMachineId, loc=el("location").value;
+ const m=data[loc].find(x=>x.id===id);
+ if(!m||m.status!=="Available"){closePayment();toast("Sorry, this machine is no longer available.");render();return;}
+ const method=el("paymentMethod").value;
+ closePayment();
+ reserveAfterPayment(id,loc,method);
+});
+function reserveAfterPayment(id,loc,method){
+ const m=data[loc].find(x=>x.id===id);if(!m||m.status!=="Available")return;
+ m.status="Reserved";active={location:loc,id,name:m.name,method};seconds=120;
+ el("bookingText").textContent=`Payment successful (demo). ${active.name} at ${active.location} is reserved. Load your clothes within 2 minutes.`;
  el("cancelBooking").hidden=false;el("timer").textContent="02:00";el("cancelBooking").onclick=cancel;
  countdown=setInterval(()=>{
    seconds--;el("timer").textContent=`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(seconds%60).padStart(2,"0")}`;
    if(seconds<=0){clearInterval(countdown);m.status="Available";active=null;el("bookingText").textContent="Reservation expired. The machine is available to other students.";el("timer").textContent="";el("cancelBooking").hidden=true;render();toast("Reservation expired.");}
  },1000);
- render();toast("Machine reserved for 2 minutes.");
+ render();toast(`Demo payment successful via ${method}. Machine reserved.`);
 }
 function cancel(){
  if(!active)return;clearInterval(countdown);
