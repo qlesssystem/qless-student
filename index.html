@@ -62,6 +62,26 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
 @media(max-width:900px){.machine-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.machine-grid{grid-template-columns:1fr}.machine{padding:17px}.student{font-size:11px}.brand h1{font-size:18px}}
 
+
+/* Moving advertisement carousel */
+.ad-panel{padding:0;overflow:hidden;position:relative;border-radius:16px;margin:18px 0 20px;background:#102a63}
+.ad-heading{display:flex;justify-content:space-between;align-items:center;padding:13px 18px 0;color:#fff;gap:10px}
+.ad-heading h3{font-size:13px;margin:0;letter-spacing:.08em;text-transform:uppercase}
+.ad-heading span{font-size:10px;color:#dbe5f7}
+.ad-viewport{overflow:hidden;position:relative}
+.ad-track{display:flex;transition:transform .65s cubic-bezier(.22,.75,.25,1);will-change:transform}
+.ad-slide{min-width:100%;min-height:158px;padding:23px 25px;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#fff;background:linear-gradient(110deg,#173b7a,#2864c5)}
+.ad-slide:nth-child(2){background:linear-gradient(110deg,#55328d,#8a60d2)}
+.ad-slide:nth-child(3){background:linear-gradient(110deg,#79521a,#c18a2d)}
+.ad-copy{max-width:720px}.ad-kicker{display:inline-block;background:#ffffff22;border:1px solid #ffffff35;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.06em;margin-bottom:9px}
+.ad-slide h3{font-size:clamp(19px,2.5vw,27px);margin:0 0 7px}.ad-slide p{font-size:13px;line-height:1.5;margin:0;color:#eef3ff;max-width:620px}
+.ad-art{font-size:52px;flex:0 0 auto;filter:drop-shadow(0 5px 8px #0002)}
+.ad-controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;padding:0 17px 13px;background:#102a63}
+.ad-arrow{width:27px;height:27px;padding:0;border-radius:50%;background:#ffffff20;color:white;font-size:16px}
+.ad-dot{width:7px;height:7px;padding:0;border-radius:50%;background:#ffffff55}.ad-dot.active{width:19px;border-radius:8px;background:#e7b84b}
+@media(max-width:560px){.ad-slide{min-height:145px;padding:19px}.ad-art{font-size:38px}.ad-slide p{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.ad-track{transition:none}}
+
 </style>
 </head>
 <body>
@@ -90,6 +110,18 @@ footer{text-align:center;color:#8490a5;font-size:11px;padding:22px}
     <div class="stat"><strong id="reserved">1</strong><span>Reserved</span></div>
     <div class="stat"><strong id="maintenance">1</strong><span>Maintenance</span></div>
   </div>
+  <section class="panel ad-panel" aria-label="Sponsored advertisements">
+    <div class="ad-heading"><h3>Offers & Advertisements</h3><span>QLess Student Deals</span></div>
+    <div class="ad-viewport" id="adViewport">
+      <div class="ad-track" id="adTrack">
+        <article class="ad-slide"><div class="ad-copy"><span class="ad-kicker">STUDENT ESSENTIALS</span><h3>Make laundry day easier.</h3><p>Discover useful student deals and services while you wait. Check back for new offers from participating partners.</p></div><div class="ad-art" aria-hidden="true">🧺</div></article>
+        <article class="ad-slide"><div class="ad-copy"><span class="ad-kicker">CAMPUS PARTNER OFFER</span><h3>A little break while your laundry runs.</h3><p>Explore nearby food and beverage promotions from QLess partner businesses. Offers shown here are demonstration content.</p></div><div class="ad-art" aria-hidden="true">☕</div></article>
+        <article class="ad-slide"><div class="ad-copy"><span class="ad-kicker">QLess UPDATES</span><h3>More convenience, more rewards.</h3><p>Look out for student promotions, loyalty rewards and special campaigns coming to QLess.</p></div><div class="ad-art" aria-hidden="true">🎁</div></article>
+      </div>
+    </div>
+    <div class="ad-controls"><button class="ad-arrow" id="adPrev" type="button" aria-label="Previous advertisement">‹</button><button class="ad-dot active" type="button" data-ad="0" aria-label="Advertisement 1"></button><button class="ad-dot" type="button" data-ad="1" aria-label="Advertisement 2"></button><button class="ad-dot" type="button" data-ad="2" aria-label="Advertisement 3"></button><button class="ad-arrow" id="adNext" type="button" aria-label="Next advertisement">›</button></div>
+  </section>
+
   <section class="panel">
     <div class="section-head"><h3>Machine availability</h3>
       <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Available</span><span><i class="dot" style="background:var(--orange)"></i>In use</span><span><i class="dot" style="background:var(--red)"></i>Maintenance</span><span><i class="dot" style="background:var(--blue)"></i>Reserved</span></div>
@@ -365,6 +397,27 @@ function cancel(){
  active=null;el("bookingText").textContent="Reservation cancelled. You have no active reservation.";el("timer").textContent="";el("cancelBooking").hidden=true;el("scanMachineQR").hidden=true;render();toast("Reservation cancelled.");
 }
 el("location").addEventListener("change",render);el("type").addEventListener("change",render);render();
+
+// Auto-moving advertisement carousel; pauses while hovered or focused.
+(function(){
+ const track=document.getElementById("adTrack");
+ const viewport=document.getElementById("adViewport");
+ const dots=[...document.querySelectorAll(".ad-dot")];
+ const total=dots.length; let index=0; let adTimer=null; let paused=false;
+ function showAd(next){index=(next+total)%total;track.style.transform=`translateX(-${index*100}%)`;dots.forEach((dot,i)=>dot.classList.toggle("active",i===index));}
+ function stop(){if(adTimer){clearInterval(adTimer);adTimer=null;}}
+ function start(){stop();if(!paused&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)adTimer=setInterval(()=>showAd(index+1),4500);}
+ document.getElementById("adPrev").addEventListener("click",()=>{showAd(index-1);start();});
+ document.getElementById("adNext").addEventListener("click",()=>{showAd(index+1);start();});
+ dots.forEach(dot=>dot.addEventListener("click",()=>{showAd(Number(dot.dataset.ad));start();}));
+ viewport.addEventListener("mouseenter",()=>{paused=true;stop();});
+ viewport.addEventListener("mouseleave",()=>{paused=false;start();});
+ viewport.addEventListener("focusin",()=>{paused=true;stop();});
+ viewport.addEventListener("focusout",()=>{paused=false;start();});
+ document.addEventListener("visibilitychange",()=>document.hidden?stop():start());
+ start();
+})();
+
 </script>
 </body>
 </html>
